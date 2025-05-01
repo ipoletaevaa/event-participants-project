@@ -74,6 +74,38 @@
             </div>
             <div class="user-info">
                 <h1 class="username">{{ user.username }}</h1>
+
+                <!-- БЕЙДЖ РОЛИ -->
+                <span style="
+                    display: inline-block;
+                    background-color:
+                        {% if user.role == 'admin' %}#ffe0e0
+                        {% elif user.role == 'expert' %}#e0f7fa
+                        {% elif user.role == 'organizer' %}#fff4e0
+                        {% else %}#f0f0f0{% endif %};
+                    color:
+                        {% if user.role == 'admin' %}#c62828
+                        {% elif user.role == 'expert' %}#00796b
+                        {% elif user.role == 'organizer' %}#ef6c00
+                        {% else %}#555{% endif %};
+                    padding: 6px 14px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    border-radius: 20px;
+                    margin-top: 6px;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                ">
+                    {% if user.role == 'admin' %}
+                        🛡 Администратор
+                    {% elif user.role == 'expert' %}
+                        🧠 Эксперт
+                    {% elif user.role == 'organizer' %}
+                        📅 Организатор
+                    {% else %}
+                        👤 Участник
+                    {% endif %}
+                </span>
+
                 {% if user.about_me %}
                 <div class="about-me">
                     {{ user.about_me }}
