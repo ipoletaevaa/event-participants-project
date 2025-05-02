@@ -61,6 +61,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     about_me = db.Column(db.String(140))
+    role = db.Column(db.String(32), default='participant')#добавила
     avatar = db.Column(db.String(120))
     qr_code_token = db.Column(db.String(32), index=True)
     qr_code_token_expiration = db.Column(db.DateTime)
@@ -116,6 +117,20 @@ class User(UserMixin, db.Model):
         img.save(buffered, format="PNG")
         img_str = base64.b64encode(buffered.getvalue()).decode()
         return f"data:image/png;base64,{img_str}"
+
+    #методы для проверки роли
+    def is_admin(self):
+        return self.role == 'admin'
+
+    def is_expert(self):
+        return self.role == 'expert'
+
+    def is_organizer(self):
+        return self.role == 'organizer'
+
+    def is_participant(self):
+        return self.role == 'participant'
+
 
 @login.user_loader
 def load_user(id):
