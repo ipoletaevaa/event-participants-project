@@ -159,6 +159,18 @@ class EditProfileForm(FlaskForm):
 @app.shell_context_processor
 def make_shell_context():
     return {'db': db, 'User': User}
+from functools import wraps
+from flask import abort
+
+def role_required(*roles):
+    def wrapper(func):
+        @wraps(func)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated or current_user.role not in roles:
+                abort(403)
+            return func(*args, **kwargs)
+        return decorated_view
+    return wrapper
 
 @app.route('/')
 @app.route('/index')
@@ -315,6 +327,23 @@ def scan_qr():
         return redirect(url_for('scan_qr'))
 
     return render_template('scan_qr.html', title='Сканировать QR-код')
+@app.route('/admin_dashboard')
+@login_required
+@role_required('admin')
+def admin_dashboard():
+    return render_template('admin.html')
+
+@app.route('/expert_tools')
+@login_required
+@role_required('expert')
+def expert_tools():
+    return render_template('expert.html')
+
+@app.route('/organizer_panel')
+@login_required
+@role_required('organizer')
+def organizer_panel():
+    return render_template('organizer.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
