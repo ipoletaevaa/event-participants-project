@@ -115,7 +115,16 @@
         </div>
 
         {% if user == current_user %}
-        <a href="{{ url_for('edit_profile') }}" class="edit-btn">Редактировать профиль</a>
-        {% endif %}
+    <a href="{{ url_for('edit_profile') }}" class="edit-btn">Редактировать профиль</a>
+
+    {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('admin_dashboard') }}" class="edit-btn" style="background:#c62828;">Админ-панель</a>
+    {% elif current_user.role == 'expert' %}
+        <a href="{{ url_for('expert_tools') }}" class="edit-btn" style="background:#00796b;">Инструменты эксперта</a>
+    {% elif current_user.role == 'organizer' %}
+        <a href="{{ url_for('organizer_panel') }}" class="edit-btn" style="background:#ef6c00;">Панель организатора</a>
+    {% endif %}
+{% endif %}
+
     </div>
 {% endblock %}
