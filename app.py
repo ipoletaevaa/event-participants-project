@@ -65,6 +65,8 @@ class User(UserMixin, db.Model):
     qr_code_token = db.Column(db.String(32), index=True)
     qr_code_token_expiration = db.Column(db.DateTime)
 
+    role = db.Column(db.String(20), default='participant')
+
     def avatar_url(self, size=128):
         if self.avatar:
             return url_for('static', filename=f'uploads/avatars/{self.avatar}')
@@ -157,6 +159,19 @@ class EditProfileForm(FlaskForm):
                 raise ValidationError('Это имя уже занято')
 
 @app.shell_context_processor
+from functools import wraps
+from flask import abort
+
+def role_required(*roles):
+    def wrapper(view_func):
+        @wraps(view_func)
+        def wrapped_view(*args, **kwargs):
+            if not current_user.is_authenticated or current_user.role not in roles:
+                abort(403)
+            return view_func(*args, **kwargs)
+        return wrapped_view
+    return wrapper
+
 def make_shell_context():
     return {'db': db, 'User': User}
 
@@ -209,6 +224,21 @@ def register():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('user.html', user=user)
+@app.route('/change_role/<username>', methods=['POST'])
+@login_required
+@role_required('admin')
+def change_role(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    new_role = request.form.get('new_role')
+
+    if new_role not in ['admin', 'expert', 'organizer', 'participant']:
+        flash('Недопустимая роль', 'error')
+        return redirect(url_for('user', username=username))
+
+    user.role = new_role
+    db.session.commit()
+    flash(f'Роль пользователя {user.username} изменена на {new_role}', 'success')
+    return redirect(url_for('user', username=username))
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
