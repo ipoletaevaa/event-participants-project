@@ -115,7 +115,20 @@
         </div>
 
         {% if user == current_user %}
-        <a href="{{ url_for('edit_profile') }}" class="edit-btn">Редактировать профиль</a>
+        <a href="{{ url_for('edit_profile') }}" class="edit-btn">Редактировать профиль</a> 
         {% endif %}
     </div>
+{% if current_user.role == 'admin' %}
+    <form method="POST" action="{{ url_for('change_role', username=user.username) }}" style="margin-top: 20px;">
+        <label for="new_role" style="font-weight: 600; margin-right: 10px;">Изменить роль:</label>
+        <select name="new_role" id="new_role" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+            <option value="participant" {% if user.role == 'participant' %}selected{% endif %}>👤 Участник</option>
+            <option value="expert" {% if user.role == 'expert' %}selected{% endif %}>🧠 Эксперт</option>
+            <option value="organizer" {% if user.role == 'organizer' %}selected{% endif %}>📅 Организатор</option>
+            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>🛡 Администратор</option>
+        </select>
+        <button type="submit" class="edit-btn" style="margin-left: 10px;">Сохранить</button>
+    </form>
+{% endif %}
+
 {% endblock %}
