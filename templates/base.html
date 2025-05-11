@@ -41,6 +41,26 @@
         </style>
     </head>
     <body>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div style="max-width: 800px; margin: 20px auto;">
+            {% for category, message in messages %}
+            <div style="
+                background-color: {% if category == 'error' %}#fdecea{% elif category == 'success' %}#e6f4ea{% else %}#f0f0f0{% endif %};
+                color: {% if category == 'error' %}#b71c1c{% elif category == 'success' %}#1b5e20{% else %}#333{% endif %};
+                padding: 12px 20px;
+                border-left: 5px solid {% if category == 'error' %}#c62828{% elif category == 'success' %}#2e7d32{% else %}#999{% endif %};
+                border-radius: 6px;
+                margin-bottom: 16px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            ">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
         <div>
             <a href="{{ url_for('index') }}">Главная</a>
             {% if current_user.is_anonymous %}
@@ -53,15 +73,6 @@
             {% endif %}
         </div>
         <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
         {% block content %}{% endblock %}
     </body>
 </html>
